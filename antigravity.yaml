@@ -1,0 +1,58 @@
+version: "1.0"
+project:
+  name: "GEOCE LabLicence"
+  slug: "geoce-lablicence"
+  version: "0.1.0"
+  description: "Sistema inteligente de alocação de hardware, filas FIFO, cotas justas e métricas laboratoriais."
+  author: "GEOCE Lab Engineering Team"
+
+runtime:
+  framework: "nextjs"
+  framework_version: "14.x"
+  node_version: "20.x"
+  package_manager: "pnpm"
+  language: "typescript"
+
+infrastructure:
+  hosting:
+    provider: "vercel"
+    region: "gru1" # São Paulo (baixa latência)
+    env_sync: true
+  database:
+    provider: "supabase"
+    type: "postgresql"
+    features:
+      - "realtime"
+      - "row_level_security"
+      - "pg_cron"
+      - "pg_stat_statements"
+  auth:
+    provider: "supabase_auth"
+    strategies:
+      - "google_oauth"
+  notifications:
+    provider: "resend"
+
+policies:
+  fair_sharing:
+    enabled: true
+    max_session_duration_hours: 4
+    weekly_quota_hours_per_user: 20
+    inactivity_timeout_minutes: 15
+  fifo_queue:
+    enabled: true
+    priority_field: "requested_at"
+    cancellation_rules:
+      - "owner_only"
+      - "admin_override"
+  metrics_export:
+    enabled: true
+    formats: ["csv", "json"]
+    retention_days: 365
+
+scripts:
+  bootstrap: "pnpm install && pnpm db:migrate"
+  dev: "next dev"
+  build: "next build"
+  start: "next start"
+  lint: "next lint"
