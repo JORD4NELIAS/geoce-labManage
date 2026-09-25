@@ -22,6 +22,8 @@ export interface Database {
           avatar_url: string | null;
           role: UserRole;
           weekly_hours_limit: number;
+          is_active: boolean;
+          deleted_at: string | null;
           created_at: string;
         };
         Insert: {
@@ -31,6 +33,8 @@ export interface Database {
           avatar_url?: string | null;
           role?: UserRole;
           weekly_hours_limit?: number;
+          is_active?: boolean;
+          deleted_at?: string | null;
           created_at?: string;
         };
         Update: {
@@ -40,6 +44,8 @@ export interface Database {
           avatar_url?: string | null;
           role?: UserRole;
           weekly_hours_limit?: number;
+          is_active?: boolean;
+          deleted_at?: string | null;
           created_at?: string;
         };
       };
@@ -79,7 +85,8 @@ export interface Database {
       reservations: {
         Row: {
           id: string;
-          user_id: string;
+          user_id: string | null;
+          user_email_snapshot: string | null;
           machine_id: string;
           purpose: string;
           workload_type: WorkloadCategory;
@@ -94,7 +101,8 @@ export interface Database {
         };
         Insert: {
           id?: string;
-          user_id: string;
+          user_id?: string | null;
+          user_email_snapshot?: string | null;
           machine_id: string;
           purpose: string;
           workload_type?: WorkloadCategory;
@@ -108,7 +116,8 @@ export interface Database {
         };
         Update: {
           id?: string;
-          user_id?: string;
+          user_id?: string | null;
+          user_email_snapshot?: string | null;
           machine_id?: string;
           purpose?: string;
           workload_type?: WorkloadCategory;
@@ -119,6 +128,41 @@ export interface Database {
           cancelled_by?: string | null;
           cancelled_at?: string | null;
           check_in_at?: string | null;
+        };
+      };
+      access_audit_logs: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          user_email: string | null;
+          machine_id: string | null;
+          action: string;
+          ip_address: string | null;
+          user_agent: string | null;
+          details: Record<string, any>;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          user_email?: string | null;
+          machine_id?: string | null;
+          action: string;
+          ip_address?: string | null;
+          user_agent?: string | null;
+          details?: Record<string, any>;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          user_email?: string | null;
+          machine_id?: string | null;
+          action?: string;
+          ip_address?: string | null;
+          user_agent?: string | null;
+          details?: Record<string, any>;
+          created_at?: string;
         };
       };
     };

@@ -456,7 +456,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
 SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
 
 # Resend Mail Configuration
-RESEND_API_KEY="re_123456789"
+RESEND_API_KEY="re_your_resend_api_key"
+
+# Admin Governance Configuration (Whitelist de Provedor)
+ADMIN_EMAILS="adm.geoce@ufc.br,coordenador@ufc.br"
 ADMIN_ALERT_EMAIL="adm.geoce@ufc.br"
 
 # Application Settings

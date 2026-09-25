@@ -54,13 +54,17 @@ Concluímos com êxito a análise e a estruturação de todos os arquivos defini
   - [src/app/(dashboard)/page.tsx](file:///c:/Users/Elias/Documents/Programacao/GEOCELabLicence/src/app/(dashboard)/page.tsx): Catálogo de hardware e KPIs de disponibilidade.
   - [src/app/(dashboard)/queue/page.tsx](file:///c:/Users/Elias/Documents/Programacao/GEOCELabLicence/src/app/(dashboard)/queue/page.tsx): Fila FIFO ao vivo.
   - [src/app/(dashboard)/reserve/page.tsx](file:///c:/Users/Elias/Documents/Programacao/GEOCELabLicence/src/app/(dashboard)/reserve/page.tsx): Formulário de reserva com pré-validação de Fair Sharing.
-  - [src/app/(dashboard)/admin/page.tsx](file:///c:/Users/Elias/Documents/Programacao/GEOCELabLicence/src/app/(dashboard)/admin/page.tsx): Painel de alteração de estados de nós e cotas de usuários.
+  - [src/app/(dashboard)/admin/page.tsx](file:///c:/Users/Elias/Documents/Programacao/GEOCELabLicence/src/app/(dashboard)/admin/page.tsx): Painel de alteração de nós, governança de usuários e modal de cadastro de hardware.
   - [src/app/(dashboard)/admin/metrics/page.tsx](file:///c:/Users/Elias/Documents/Programacao/GEOCELabLicence/src/app/(dashboard)/admin/metrics/page.tsx): Dashboard de métricas e gatilhos de exportação.
   - [src/app/api/metrics/export/route.ts](file:///c:/Users/Elias/Documents/Programacao/GEOCELabLicence/src/app/api/metrics/export/route.ts): Rota protegida para download de CSV e JSON.
   - [src/app/api/reservations/cancel/route.ts](file:///c:/Users/Elias/Documents/Programacao/GEOCELabLicence/src/app/api/reservations/cancel/route.ts): Cancelamento atômico seguro de agendamentos.
+  - [src/app/api/admin/users/role/route.ts](file:///c:/Users/Elias/Documents/Programacao/GEOCELabLicence/src/app/api/admin/users/role/route.ts): API segura para gestores alterarem papéis (`student`, `researcher`, `admin`).
+  - [src/app/api/admin/users/quota/route.ts](file:///c:/Users/Elias/Documents/Programacao/GEOCELabLicence/src/app/api/admin/users/quota/route.ts): API segura para gestores ajustarem cotas semanais (Fair Sharing).
+  - [src/lib/auth/admins.ts](file:///c:/Users/Elias/Documents/Programacao/GEOCELabLicence/src/lib/auth/admins.ts): Módulo centralizador de whitelist e validação de administradores autorizados.
 
 ### 5. Documentação & Manual Completo
 - [PASSO_A_PASSO_INSTALACAO.md](file:///c:/Users/Elias/Documents/Programacao/GEOCELabLicence/PASSO_A_PASSO_INSTALACAO.md): Manual estruturado em 9 módulos explicando desde o download do Node.js/pnpm, Git/GitHub, configuração do Supabase, Google OAuth, Resend até o deploy na Vercel e resolução de problemas comuns.
+- [.gitignore](file:///c:/Users/Elias/Documents/Programacao/GEOCELabLicence/.gitignore): Blindagem estrita contra vazamento de credenciais, chaves privadas, dumps, binários pesados e artefatos de build.
 
 ---
 

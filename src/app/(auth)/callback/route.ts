@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { sendWelcomeEmail, sendAdminNewUserAlert } from '@/lib/email/resend';
+import { isPreAuthorizedAdminEmail } from '@/lib/auth/admins';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -34,12 +36,17 @@ export async function GET(request: Request) {
 
     if (!error && session?.user) {
       const user = session.user;
+      const adminClient = createAdminClient();
 
-      const { data: existingProfile } = await supabase
+      const { data: existingProfile } = await adminClient
         .from('profiles')
-        .select('id')
+        .select('id, role')
         .eq('id', user.id)
         .single();
+
+      // Regra de Provider / Whitelist:
+      // Apenas emails expressamente listados em ADMIN_EMAILS ou ADMIN_ALERT_EMAIL recebem admin automaticamente
+      const isAuthorizedAdmin = isPreAuthorizedAdminEmail(user.email);
 
       // Primeiro acesso: sincronizar perfil e disparar e-mails para Usuário e ADM
       if (!existingProfile) {
@@ -48,13 +55,13 @@ export async function GET(request: Request) {
           user.user_metadata?.name ||
           'Pesquisador/Aluno GEOCE';
 
-        await supabase.from('profiles').insert({
+        await adminClient.from('profiles').insert({
           id: user.id,
           email: user.email!,
           full_name: fullName,
           avatar_url: user.user_metadata?.avatar_url || null,
-          role: 'student',
-          weekly_hours_limit: 20,
+          role: isAuthorizedAdmin ? 'admin' : 'student',
+          weekly_hours_limit: isAuthorizedAdmin ? 100 : 20,
         });
 
         // Disparo duplo de notificações assíncronas via Resend
@@ -62,6 +69,12 @@ export async function GET(request: Request) {
           sendWelcomeEmail(user.email!, fullName),
           sendAdminNewUserAlert(fullName, user.email!),
         ]);
+      } else if (isAuthorizedAdmin && existingProfile.role !== 'admin') {
+        // Auto-promove apenas se o e-mail estiver na lista de admins pré-autorizados
+        await adminClient
+          .from('profiles')
+          .update({ role: 'admin', weekly_hours_limit: 100 })
+          .eq('id', user.id);
       }
 
       return NextResponse.redirect(`${origin}/`);

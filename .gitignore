@@ -1,46 +1,94 @@
-# Dependencies
-/instalacao
+# ==============================================================================
+# GEOCE LabManage — Regras Estritas de Segurança (.gitignore)
+# ==============================================================================
+
+# 1. Dependências e Gerenciadores de Pacote
 /node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz
 
-# Next.js build output
+# 2. Instaladores e Binários Locais Pesados (Irrelevantes para o repositório)
+/instalacao/
+*.msi
+*.exe
+*.dmg
+*.pkg
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# 3. Chaves, Tokens e Credenciais Privadas (SEGURANÇA CRÍTICA - NUNCA COMMITAR)
+.env
+.env*
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.token
+tokens.json
+credentials.json
+service-account*.json
+service_role*.json
+.secrets
+secrets/
+private/
+
+# 4. Saídas de Build e Compilação
 /.next/
 /out/
-/build
-/dist
+/build/
+/dist/
+*.tsbuildinfo
+next-env.d.ts
 
-# Production
-.vercel
-
-# Debug / logs
+# 5. Logs e Depuração
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+*.log
 
-# Environment files - MUST NEVER BE COMMITTED
-.env
-.env*.local
-!.env.example
-.PASSO_A_PASSO_INSTALACAO.md
+# 6. Dumps, Backups Locais e Scratchpad Privado
+scratch/
+dumps/
+dump/
+temp/
+tmp/
+.temp/
+.tmp/
+.cache/
+*.dump
+*.sql.bak
+*.bak
+*.backup
+*.sqlite
+*.sqlite3
+*.db
 
-# TypeScript
-*.tsbuildinfo
-next-env.d.ts
+# 7. Plataformas de Deploy (Vercel)
+.vercel/
 
-# IDE and OS files
+# 8. Metadados de Sistema Operacional, IDEs e IA
 .DS_Store
-*.pem
 Thumbs.db
+ehthumbs.db
+Desktop.ini
+.idea/
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
-.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+.antigravity/
+.gemini/
+

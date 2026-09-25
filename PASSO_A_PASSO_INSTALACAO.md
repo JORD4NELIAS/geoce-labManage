@@ -54,10 +54,10 @@ Vamos salvar o projeto no seu GitHub pessoal ou institucional.
 3. Escolha a visibilidade: **Public** ou **Private**.
 4. **IMPORTANTE**: **NÃO** marque as caixas de "Add a README file", ".gitignore" ou "license", pois já criamos esses arquivos especialmente para você nesta pasta.
 5. Clique no botão verde **Create repository**.
-6. Copie a URL do seu repositório (ex: `https://github.com/SEU_USUARIO/geoce-labManage.git`).
+6. Copie a URL do seu repositório (ex: `https://github.com/UFC-GEOCE/geoce-labManage.git`).
 
 ### Passo 2.2 — Inicializar o Git Local e Fazer o Primeiro Envio
-Abra o terminal na pasta do projeto (`c:\Users\Elias\Documents\Programacao\GEOCELabLicence`) e execute:
+Abra o terminal na pasta do projeto (`c:\Users\SEU_USUARIO\Documents\GEOCELabLicence`) e execute:
 
 ```powershell
 # 1. Inicializar o repositório local
@@ -70,10 +70,10 @@ git branch -M main
 git add .
 
 # 4. Criar o primeiro commit
-git commit -m "feat: initial commit with geoce lablicence architecture, ui and configs"
+git commit -m "feat: initial commit with geoce labManage architecture, ui and configs"
 
 # 5. Conectar com o seu repositório do GitHub (substitua pela URL que você copiou)
-git remote add origin https://github.com/SEU_USUARIO/geoce-lablicence.git
+git remote add origin https://github.com/UFC-GEOCE/geoce-labManage.git
 
 # 6. Enviar os arquivos para o GitHub
 git push -u origin main
@@ -89,7 +89,7 @@ O **Supabase** é a plataforma de backend que gerencia o PostgreSQL, WebSockets 
 1. Acesse **[https://supabase.com/](https://supabase.com/)** e faça login ou crie uma conta gratuita (pode entrar direto com seu GitHub).
 2. No painel inicial, clique em **+ New Project**.
 3. Preencha os dados:
-   - **Name**: `geoce-lablicence`
+   - **Name**: `geoce-labManage`
    - **Database Password**: Defina uma senha forte (anote-a!).
    - **Region**: Selecione **South America (São Paulo)** para menor latência no Brasil.
 4. Clique em **Create new project** e aguarde 1 a 2 minutos até o banco ser provisionado.
@@ -122,10 +122,10 @@ Para que os pesquisadores entrem no sistema com a conta Google institucional.
 
 ### Passo 4.2 — Criar Credenciais no Google Cloud Console
 1. Acesse o **[Google Cloud Console](https://console.cloud.google.com/)**.
-2. Crie um novo projeto (ex: `GEOCE LabLicence`).
+2. Crie um novo projeto (ex: `GEOCE LabManage`).
 3. Vá no menu de navegação $\rightarrow$ **APIs e Serviços** $\rightarrow$ **Tela de permissão OAuth (OAuth consent screen)**:
    - Escolha **Externo** (External) ou **Interno** (se tiver Google Workspace na UFC).
-   - Preencha o nome do app: `GEOCE LabLicence`.
+   - Preencha o nome do app: `GEOCE LabManage`.
    - Coloque seu e-mail de suporte.
    - Salve e avance pelas etapas mantendo os escopos padrão (`email`, `profile`, `openid`).
 4. Agora vá em **APIs e Serviços** $\rightarrow$ **Credenciais**:
@@ -153,7 +153,7 @@ O **Resend** envia automaticamente e-mails de boas-vindas para o pesquisador e a
 1. Acesse **[https://resend.com/](https://resend.com/)** e faça login gratuito.
 2. No menu lateral, clique em **API Keys**.
 3. Clique em **+ Create API Key**:
-   - Nome: `geoce-lablicence`
+   - Nome: `geoce-labManage`
    - Permissão: `Full access`
 4. Copie a chave gerada (iniciada por `re_...`).
 > **Dica**: No plano gratuito, enquanto você não cadastra um domínio próprio da UFC (`@geoce.ufc.br`), o Resend permite enviar testes normalmente para o próprio e-mail com o qual você cadastrou sua conta no Resend utilizando o remetente padrão `onboarding@resend.dev`.
@@ -162,7 +162,7 @@ O **Resend** envia automaticamente e-mails de boas-vindas para o pesquisador e a
 
 ## Módulo 6: Configuração das Variáveis de Ambiente Locais
 
-Na raiz da sua pasta `GEOCELabLicence`:
+Na raiz da sua pasta `GEOCELabManage`:
 
 1. Crie uma cópia do arquivo `.env.example` e renomeie para `.env.local`:
    ```powershell
@@ -178,7 +178,10 @@ SUPABASE_SERVICE_ROLE_KEY="sua-service-role-key-aqui"
 
 # Resend Mail Configuration (coletado no Módulo 5)
 RESEND_API_KEY="re_sua_chave_resend_aqui"
-ADMIN_ALERT_EMAIL="seu-email-adm@ufc.br"
+
+# Governança de Administradores (Whitelist de Provedor)
+ADMIN_EMAILS="adm.geoce@ufc.br,coordenador@ufc.br"
+ADMIN_ALERT_EMAIL="adm.geoce@ufc.br"
 
 # Application Settings
 NEXT_PUBLIC_APP_NAME="GEOCE LabLicence"
@@ -238,12 +241,25 @@ A Vercel publica o site na internet gratuitamente com certificado SSL e domínio
 ### 1. "O login social dá erro de Redirect URI mismatch"
 - **Solução**: Verifique se a URL cadastrada no Google Cloud Console em *URIs de redirecionamento autorizados* é exatamente a Callback URL fornecida pelo Supabase (`https://<projeto>.supabase.co/auth/v1/callback`).
 
-### 2. "Como definir um usuário como Administrador?"
-- Por padrão, novos usuários são criados com o papel `student`. Para promover um usuário a administrador:
-  1. No Supabase, abra o **Table Editor**.
-  2. Selecione a tabela `profiles`.
-  3. Encontre a linha do seu usuário e mude o campo `role` de `student` para `admin`.
-  4. Recarregue a página do sistema: os menus de **Gestão do Laboratório** e **Métricas** ficarão acessíveis.
+### 2. "Como definir ou autorizar um usuário como Administrador?"
+- Por segurança estrita, **usuários comuns não podem se autopromover** nem solicitar privilégios administrativos. O acesso de administrador é concedido exclusivamente por dois métodos:
+  
+  **Método A — Regra de Provedor / Whitelist no Servidor:**
+  - No arquivo `.env.local` (ou nas variáveis de ambiente da Vercel), adicione os e-mails autorizados em `ADMIN_EMAILS`:
+    ```env
+    ADMIN_EMAILS="adm.geoce@ufc.br,coordenador@ufc.br"
+    ADMIN_ALERT_EMAIL="adm.geoce@ufc.br"
+    ```
+  - Quando qualquer uma dessas contas logar via Google OAuth, o sistema concede automaticamente o papel de `admin` e cota de 100 horas.
+  
+  **Método B — Regra Direta no Banco SQL ou Painel de Gestão:**
+  - **Via SQL Editor do Supabase**:
+    ```sql
+    UPDATE public.profiles 
+    SET role = 'admin', weekly_hours_limit = 100 
+    WHERE email = 'seu_email@ufc.br';
+    ```
+  - **Via Painel `/admin`**: Um gestor já autenticado pode clicar no botão **"Alterar Papel"** na tabela de usuários e selecionar `admin`, `researcher` ou `student`.
 
 ### 3. "Como funciona o bloqueio de cota (Fair Sharing)?"
 - O sistema valida a cota em duas camadas:

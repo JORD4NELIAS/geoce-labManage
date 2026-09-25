@@ -6,7 +6,7 @@ import { Database } from '@/types/database';
 
 type Reservation = Database['public']['Tables']['reservations']['Row'] & {
   profiles?: { full_name: string; email: string };
-  machines?: { code_name: string };
+  machines?: { code_name: string; specs: any };
 };
 
 export function useRealtimeQueue() {
@@ -18,7 +18,7 @@ export function useRealtimeQueue() {
     try {
       const { data, error } = await supabase
         .from('reservations')
-        .select('*, profiles:user_id(full_name, email), machines:machine_id(code_name)')
+        .select('*, profiles:user_id(full_name, email), machines:machine_id(code_name, specs)')
         .in('status', ['queued', 'approved', 'active'])
         .order('requested_at', { ascending: true });
 
