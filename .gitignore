@@ -92,3 +92,7 @@ Desktop.ini
 .antigravity/
 .gemini/
 
+# 9. Documentação Interna e Arquivos Locais
+DOCUMENTACAO_TECNICA.md
+DOCUMENTACAO*.md
+
