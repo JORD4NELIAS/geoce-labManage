@@ -48,6 +48,15 @@ export interface Database {
           deleted_at?: string | null;
           created_at?: string;
         };
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey";
+            columns: ["id"];
+            isOneToOne: true;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       machines: {
         Row: {
@@ -81,6 +90,7 @@ export interface Database {
           is_exclusive?: boolean;
           created_at?: string;
         };
+        Relationships: [];
       };
       reservations: {
         Row: {
@@ -129,6 +139,29 @@ export interface Database {
           cancelled_at?: string | null;
           check_in_at?: string | null;
         };
+        Relationships: [
+          {
+            foreignKeyName: "reservations_cancelled_by_fkey";
+            columns: ["cancelled_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reservations_machine_id_fkey";
+            columns: ["machine_id"];
+            isOneToOne: false;
+            referencedRelation: "machines";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reservations_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       access_audit_logs: {
         Row: {
@@ -164,6 +197,22 @@ export interface Database {
           details?: Record<string, any>;
           created_at?: string;
         };
+        Relationships: [
+          {
+            foreignKeyName: "access_audit_logs_machine_id_fkey";
+            columns: ["machine_id"];
+            isOneToOne: false;
+            referencedRelation: "machines";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "access_audit_logs_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
       };
     };
     Views: {
@@ -179,7 +228,27 @@ export interface Database {
           total_cancellations: number;
           total_completed: number;
         };
+        Relationships: [];
       };
+    };
+    Functions: {
+      check_user_fair_share_quota: {
+        Args: Record<PropertyKey, never>;
+        Returns: unknown;
+      };
+      expire_stale_reservations: {
+        Args: Record<PropertyKey, never>;
+        Returns: unknown;
+      };
+    };
+    Enums: {
+      user_role: UserRole;
+      machine_status: MachineStatus;
+      reservation_status: ReservationStatus;
+      workload_category: WorkloadCategory;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
     };
   };
 }

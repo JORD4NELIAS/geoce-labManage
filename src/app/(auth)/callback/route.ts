@@ -4,6 +4,9 @@ import { cookies } from 'next/headers';
 import { sendWelcomeEmail, sendAdminNewUserAlert } from '@/lib/email/resend';
 import { isPreAuthorizedAdminEmail } from '@/lib/auth/admins';
 import { createAdminClient } from '@/lib/supabase/admin';
+import type { Database } from '@/types/database';
+
+type ProfileInsert = Database['public']['Tables']['profiles']['Insert'];
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -55,14 +58,19 @@ export async function GET(request: Request) {
           user.user_metadata?.name ||
           'Pesquisador/Aluno GEOCE';
 
-        await adminClient.from('profiles').insert({
+        const profileData: ProfileInsert = {
           id: user.id,
           email: user.email!,
           full_name: fullName,
           avatar_url: user.user_metadata?.avatar_url || null,
           role: isAuthorizedAdmin ? 'admin' : 'student',
           weekly_hours_limit: isAuthorizedAdmin ? 100 : 20,
-        });
+        };
+
+        const { error: insertError } = await adminClient.from('profiles').insert(profileData);
+        if (insertError) {
+          console.error('[OAuth Callback] Erro ao criar perfil:', insertError);
+        }
 
         // Disparo duplo de notificações assíncronas via Resend
         await Promise.allSettled([
