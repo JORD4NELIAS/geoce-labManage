@@ -7,7 +7,7 @@ import { useUserQuota } from '@/hooks/useUserQuota';
 import { WorkloadCategory } from '@/types/database';
 import { Calendar, Clock, AlertTriangle, ShieldCheck, Cpu } from 'lucide-react';
 
-export default function ReservePage() {
+function ReserveContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const preselectedMachineId = searchParams.get('machine_id') || '';
@@ -248,5 +248,19 @@ export default function ReservePage() {
         </button>
       </form>
     </div>
+  );
+}
+
+export default function ReservePage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="max-w-3xl mx-auto p-6 flex items-center justify-center min-h-[400px]">
+          <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <ReserveContent />
+    </React.Suspense>
   );
 }
